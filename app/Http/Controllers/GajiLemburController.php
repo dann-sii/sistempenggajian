@@ -13,6 +13,6 @@ class GajiLemburController extends Controller
             ['id' => 1, 'nama' => 'Gaji Lembur per Jam', 'tarif' => 20000.00, 'keterangan' => 'Tarif standar lembur per jam', 'status' => 'Aktif'],
         ];
 
-        return view('gaji_lembur.index', compact('gajiLembur'));
+        return view('admin_keuangan.gaji_lembur.gaji_lembur', compact('gajiLembur'));
     }
 }

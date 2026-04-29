@@ -32,10 +32,48 @@ class PresensiController extends Controller
             ['id' => 20, 'nama' => 'Qomarudin', 'tanggal' => '2026-03-02', 'jam_masuk' => '08:00', 'jam_keluar' => '16:00', 'kehadiran' => 'Hadir', 'jam_lembur' => '0'],
         ];
 
+        $fullDataset = $allPresensi;
+        $search = $request->get('search');
+        $date = $request->get('date');
+
+        if ($search) {
+            $allPresensi = array_filter($allPresensi, function($p) use ($search) {
+                return stripos($p['nama'], $search) !== false;
+            });
+        }
+
+        if ($date) {
+            $allPresensi = array_filter($allPresensi, function($p) use ($date) {
+                return $p['tanggal'] === $date;
+            });
+        }
+
+        // Calculate summary across the entire mock dataset for the current month
+        foreach ($allPresensi as &$p) {
+            $H = 0; $I = 0; $S = 0; $C = 0; $A = 0;
+            $history = [];
+            foreach ($fullDataset as $ap) {
+                if ($ap['nama'] === $p['nama']) {
+                    $history[] = [
+                        'date' => $ap['tanggal'],
+                        'status' => $ap['kehadiran']
+                    ];
+                    
+                    if ($ap['kehadiran'] === 'Hadir') $H++;
+                    elseif ($ap['kehadiran'] === 'Izin') $I++;
+                    elseif ($ap['kehadiran'] === 'Sakit') $S++;
+                    elseif ($ap['kehadiran'] === 'Cuti') $C++;
+                    elseif ($ap['kehadiran'] === 'Alpha') $A++;
+                }
+            }
+            $p['summary'] = compact('H', 'I', 'S', 'C', 'A');
+            $p['history'] = $history;
+        }
+
         $page = (int) $request->get('page', 1);
         $perPage = 10;
         $presensi = array_slice($allPresensi, ($page - 1) * $perPage, $perPage);
 
-        return view('presensi.index', compact('presensi', 'page'));
+        return view('admin_keuangan.presensi.presensi', compact('presensi', 'page'));
     }
 }

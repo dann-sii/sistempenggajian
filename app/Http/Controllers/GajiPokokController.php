@@ -17,6 +17,6 @@ class GajiPokokController extends Controller
         $perPage = 10;
         $gajiPokok = array_slice($allGajiPokok, ($page - 1) * $perPage, $perPage);
 
-        return view('gaji_pokok.index', compact('gajiPokok', 'page'));
+        return view('admin_keuangan.gaji_pokok.gaji_pokok', compact('gajiPokok', 'page'));
     }
 }

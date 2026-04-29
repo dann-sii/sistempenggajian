@@ -50,7 +50,13 @@ class KaryawanController extends Controller
         $search = $request->query('search');
         if ($search) {
             $allKaryawan = array_values(array_filter($allKaryawan, function($k) use ($search) {
-                return stripos($k['nama'], $search) !== false;
+                return stripos((string) $k['id'], $search) !== false
+                    || stripos((string) $k['nik'], $search) !== false
+                    || stripos((string) $k['nama'], $search) !== false
+                    || stripos((string) $k['npwp'], $search) !== false
+                    || stripos((string) $k['alamat'], $search) !== false
+                    || stripos((string) $k['no_telp'], $search) !== false
+                    || stripos((string) $k['status'], $search) !== false;
             }));
         }
 
@@ -65,17 +71,19 @@ class KaryawanController extends Controller
 
         $karyawan = array_slice($allKaryawan, ($page - 1) * $perPage, $perPage);
 
-        return view('karyawan.index', compact('karyawan', 'page', 'totalPages', 'status', 'search'));
+        return view('admin_keuangan.karyawan.data_karyawan', compact('karyawan', 'page', 'totalPages', 'status', 'search'));
     }
 
     public function store(Request $request)
     {
-        $data = request()->validate([
-            'nik' => 'required|numeric',
+        $data = $request->validate([
+            'nik' => 'required|string',
             'nama' => 'required|string',
             'npwp' => 'required|string',
-            'no_telp' => 'nullable|string',
+            'no_telp' => ['nullable', 'string', 'regex:/^08[0-9]{8,11}$/'],
             'alamat' => 'required|string',
+            'nama_bank' => 'required|string',
+            'no_rekening' => 'nullable|string',
         ]);
 
         $allKaryawan = session('karyawan_data', []);
@@ -89,11 +97,60 @@ class KaryawanController extends Controller
             'alamat' => $data['alamat'],
             'no_telp' => $data['no_telp'] ?? '-',
             'status' => 'Aktif',
+            'nama_bank' => $data['nama_bank'],
+            'no_rekening' => $data['no_rekening'] ?? '-',
         ];
 
         array_unshift($allKaryawan, $newKaryawan);
         session()->put('karyawan_data', $allKaryawan);
 
         return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'nik' => 'required|string',
+            'nama' => 'required|string',
+            'npwp' => 'required|string',
+            'no_telp' => ['nullable', 'string', 'regex:/^08[0-9]{8,11}$/'],
+            'alamat' => 'required|string',
+            'status' => 'required|string',
+            'nama_bank' => 'required|string',
+            'no_rekening' => 'nullable|string',
+        ]);
+
+        $allKaryawan = session('karyawan_data', []);
+        
+        foreach ($allKaryawan as &$k) {
+            if ($k['id'] == $id) {
+                $k['nik'] = $data['nik'];
+                $k['nama'] = $data['nama'];
+                $k['npwp'] = $data['npwp'];
+                $k['alamat'] = $data['alamat'];
+                $k['no_telp'] = $data['no_telp'] ?? '-';
+                $k['status'] = $data['status'];
+                $k['nama_bank'] = $data['nama_bank'];
+                $k['no_rekening'] = $data['no_rekening'] ?? '-';
+                break;
+            }
+        }
+        
+        session()->put('karyawan_data', $allKaryawan);
+
+        return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil diubah.');
+    }
+
+    public function destroy($id)
+    {
+        $allKaryawan = session('karyawan_data', []);
+        
+        $allKaryawan = array_filter($allKaryawan, function($k) use ($id) {
+            return $k['id'] != $id;
+        });
+
+        session()->put('karyawan_data', array_values($allKaryawan));
+
+        return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil dihapus.');
     }
 }

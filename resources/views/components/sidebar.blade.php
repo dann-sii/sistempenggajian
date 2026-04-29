@@ -17,11 +17,11 @@
                 ['name' => 'Data Presensi', 'route' => 'presensi.index', 'icon' => 'calendar-check'],
                 ['name' => 'Data Gaji Pokok', 'route' => 'gaji_pokok.index', 'icon' => 'cash'],
                 ['name' => 'Data Gaji Lembur', 'route' => 'gaji_lembur.index', 'icon' => 'clock-play'],
-                ['name' => 'Data Gaji Bonus', 'route' => '#', 'icon' => 'gift'],
-                ['name' => 'Data Potongan Gaji', 'route' => '#', 'icon' => 'cash-off'],
-                ['name' => 'Penggajian', 'route' => '#', 'icon' => 'report-money'],
-                ['name' => 'Detail Penggajian', 'route' => '#', 'icon' => 'file-analytics'],
-                ['name' => 'Laporan Penggajian', 'route' => '#', 'icon' => 'file-description'],
+                ['name' => 'Data Gaji Bonus', 'route' => 'gaji_bonus.index', 'icon' => 'gift'],
+                ['name' => 'Data Potongan Gaji', 'route' => 'potongan_gaji.index', 'icon' => 'cash-off'],
+                ['name' => 'Penggajian', 'route' => 'penggajian.index', 'icon' => 'report-money'],
+                ['name' => 'Detail Penggajian', 'route' => 'detail_penggajian.index', 'icon' => 'file-analytics'],
+                ['name' => 'Laporan Penggajian', 'route' => 'laporan_penggajian.index', 'icon' => 'file-description'],
             ];
         @endphp
 
